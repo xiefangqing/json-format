@@ -8,12 +8,14 @@
   --json-accent-soft: #e6f6f3;
   --json-error: #f1592a;
   --json-surface: #ffffff;
-  --json-line-height: 20px;
+  --json-line-height: 24px;
+  --json-font: "Consolas", "SFMono-Regular", Menlo, "Microsoft YaHei", monospace;
+  --json-ui-font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --json-code-font: "Consolas", "SFMono-Regular", Menlo, monospace;
 
   color: var(--json-text);
   background: var(--json-surface);
-  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--json-ui-font);
   color-scheme: light;
 }
 
@@ -76,8 +78,8 @@ body {
 .json-app__error {
   padding: 8px 16px 0 20px;
   color: var(--json-error);
-  font-family: var(--json-code-font);
-  font-size: 13px;
+  font-family: var(--json-font);
+  font-size: 16px;
   font-weight: 600;
   line-height: var(--json-line-height);
   word-break: break-all;
@@ -107,7 +109,7 @@ body {
   background: #fafbfc;
   color: #b0b8c0;
   font-family: var(--json-code-font);
-  font-size: 12px;
+  font-size: 13px;
   line-height: var(--json-line-height);
   padding-top: 16px;
   text-align: right;
@@ -131,8 +133,8 @@ body {
   outline: none;
   background: transparent;
   color: var(--json-text);
-  font-family: var(--json-code-font);
-  font-size: 13px;
+  font-family: var(--json-font);
+  font-size: 16px;
   line-height: var(--json-line-height);
   padding: 16px 16px 48px;
   resize: none;
@@ -257,7 +259,7 @@ body {
   background: #fafbfc;
   color: #b0b8c0;
   font-family: var(--json-code-font);
-  font-size: 12px;
+  font-size: 13px;
   line-height: var(--json-line-height);
   padding-top: 8px;
   text-align: right;
@@ -281,8 +283,8 @@ body {
 
 .json-output__lines {
   color: var(--json-text);
-  font-family: var(--json-code-font);
-  font-size: 13px;
+  font-family: var(--json-font);
+  font-size: 16px;
   line-height: var(--json-line-height);
   tab-size: 4;
   white-space: pre;
@@ -352,15 +354,4 @@ body {
   &.json-tree__toggle--minus {
     color: #e05252;
   }
-}
-
-/* 五类可编辑值共用焦点样式，逐个写会重复五遍 */
-.json-tree__key:focus,
-.json-tree__string:focus,
-.json-tree__number:focus,
-.json-tree__boolean:focus,
-.json-tree__null:focus {
-  outline: 1px solid var(--json-accent);
-  outline-offset: 1px;
-  border-radius: 2px;
 }
