@@ -1,0 +1,23 @@
+{
+  "name": "json-tool",
+  "version": "0.1.0",
+  "description": "Browser-only JSON formatter and tree viewer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --dir src/frontend run dev",
+    "build": "pnpm --dir src/frontend run build",
+    "preview": "pnpm --dir src/frontend run preview",
+    "test": "vitest run"
+  },
+  "packageManager": "pnpm@8.15.9",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.5.2",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
