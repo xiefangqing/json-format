@@ -6,3 +6,4 @@ dist/
 .workbuddy/
 site/
 .wbapp_*.genie
+*.tgz
