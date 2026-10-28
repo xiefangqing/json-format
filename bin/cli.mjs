@@ -23,14 +23,14 @@ const server = createServer((request, response) => {
 
 /** 启动失败时输出原因并以失败状态退出。 */
 function handleServerError(error) {
-  console.error(`JSON 工具启动失败：${error.message}`);
+  console.error(`JSON 格式化工具启动失败：${error.message}`);
   process.exitCode = ERROR_EXIT_CODE;
 }
 
 /** 服务就绪后打开浏览器，失败时保留可手动访问的地址。 */
 async function openBrowser() {
   const address = `http://${HOST}:${server.address().port}`;
-  console.log(`JSON 工具已启动：${address}`);
+  console.log(`JSON 格式化工具已启动：${address}`);
   console.log("按 Ctrl+C 停止服务。");
 
   try {

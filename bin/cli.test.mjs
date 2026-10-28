@@ -7,8 +7,8 @@ import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
 it("忽略 Range 请求并在异常请求后继续提供页面", async () => {
-  const directory = await mkdtemp(join(tmpdir(), "json-tool-range-"));
-  const html = "<!doctype html><title>JSON Tool</title>";
+  const directory = await mkdtemp(join(tmpdir(), "json-format-range-"));
+  const html = "<!doctype html><title>JSON Format</title>";
   let child;
 
   try {

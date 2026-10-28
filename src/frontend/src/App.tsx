@@ -26,7 +26,7 @@ const EXAMPLE_JSON = `{
     "escaped": "第一行\\n第二行\\t制表符",
     "unicode": "\\u4e2d\\u6587",
     "author": {
-        "name": "json-tool",
+        "name": "json-format",
         "version": "0.1.0"
     },
     "emptyObject": {},

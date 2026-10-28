@@ -1,4 +1,4 @@
-# JSON Tool
+# JSON Format
 
 在浏览器中格式化、校验和编辑 JSON，支持树形展示、压缩、复制和 XML 转换。
 
@@ -7,7 +7,7 @@
 安装 Node.js 20 或以上版本（自带 npm），运行：
 
 ```bash
-npx @xiefangqing/json-tool
+npx @xiefangqing/json-format
 ```
 
 首次使用时 npm 会询问是否下载，输入 `y`。命令启动后会自动打开默认浏览器；若没有打开，手动访问终端打印的地址。
@@ -21,7 +21,7 @@ npx @xiefangqing/json-tool
 首次下载需要访问 npm registry。需要明确更新到最新版时运行：
 
 ```bash
-npx @xiefangqing/json-tool@latest
+npx @xiefangqing/json-format@latest
 ```
 
 ## 本地开发
@@ -45,7 +45,7 @@ node bin/cli.mjs
 
 ## 打包与发布
 
-发布包名为 `@xiefangqing/json-tool`，初始版本为 `0.1.0`。发布者需要 npm 的 `xiefangqing` 账号及相应发布权限，登录和双重认证在本机完成，不要将密码或 token 写入仓库。
+发布包名为 `@xiefangqing/json-format`，初始版本为 `0.1.0`。发布者需要 npm 的 `xiefangqing` 账号及相应发布权限，登录和双重认证在本机完成，不要将密码或 token 写入仓库。
 
 ```bash
 pnpm install --frozen-lockfile
@@ -55,10 +55,10 @@ npm pack
 
 `npm pack` 和 `npm publish` 都会通过 `prepack` 自动构建。包内只分发启动器、前端构建产物及 npm 自动包含的元数据和 README，使用者安装时无需构建。
 
-先在仓库外的空目录测试生成的 `xiefangqing-json-tool-0.1.0.tgz`，将下方路径替换为本机压缩包的实际绝对路径：
+先在仓库外的空目录测试生成的 `xiefangqing-json-format-0.1.0.tgz`，将下方路径替换为本机压缩包的实际绝对路径：
 
 ```bash
-npx --yes --package /absolute/path/xiefangqing-json-tool-0.1.0.tgz json-tool
+npx --yes --package /absolute/path/xiefangqing-json-format-0.1.0.tgz json-format
 ```
 
 Windows 路径带空格时，用双引号包住完整路径。
@@ -82,8 +82,8 @@ npm publish --access public
 `npm whoami` 应显示 `xiefangqing`。发布后检查公共 registry 中的版本，并在仓库外用公共包启动：
 
 ```bash
-npm view @xiefangqing/json-tool version --registry=https://registry.npmjs.org/
-npx --yes @xiefangqing/json-tool@0.1.0
+npm view @xiefangqing/json-format version --registry=https://registry.npmjs.org/
+npx --yes @xiefangqing/json-format@0.1.0
 ```
 
 发布前可以直接恢复代码改动，打包不会修改公共 registry。发布后不能覆盖同一版本；有问题时修复、递增版本并重新发布，再验证最新版本。不以删除公共包作为常规回滚方式。
