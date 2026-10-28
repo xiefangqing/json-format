@@ -27,11 +27,11 @@ function handleServerError(error) {
   process.exitCode = ERROR_EXIT_CODE;
 }
 
-/** 服务就绪后打开浏览器，失败时保留可手动访问的地址。 */
+/** 服务就绪后只打印访问地址，再打开浏览器；失败时地址仍可手动访问。 */
 async function openBrowser() {
-  const address = `http://${HOST}:${server.address().port}`;
-  console.log(`JSON 格式化工具已启动：${address}`);
-  console.log("按 Ctrl+C 停止服务。");
+  // 监听地址固定 127.0.0.1，对外展示用 localhost，方便直接点开。
+  const address = `http://localhost:${server.address().port}`;
+  console.log(address);
 
   try {
     await open(address);

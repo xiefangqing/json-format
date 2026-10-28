@@ -37,7 +37,7 @@ it("忽略 Range 请求并在异常请求后继续提供页面", async () => {
       child.once("exit", (code) => reject(new Error(`CLI 提前退出 (${code}): ${errors}`)));
       child.stdout.on("data", (chunk) => {
         output += chunk;
-        const match = output.match(/http:\/\/127\.0\.0\.1:\d+/);
+        const match = output.match(/http:\/\/localhost:\d+/);
         if (match) resolve(match[0]);
       });
     });
