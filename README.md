@@ -45,7 +45,7 @@ node bin/cli.mjs
 
 ## 打包与发布
 
-发布包名为 `@xiefangqing/json-format`，初始版本为 `0.1.0`。发布者需要 npm 的 `xiefangqing` 账号及相应发布权限，登录和双重认证在本机完成，不要将密码或 token 写入仓库。
+发布包名为 `@xiefangqing/json-format`，当前版本为 `0.2.0`。发布者需要 npm 的 `xiefangqing` 账号及相应发布权限，登录和双重认证在本机完成，不要将密码或 token 写入仓库。
 
 ```bash
 pnpm install --frozen-lockfile
@@ -55,10 +55,10 @@ npm pack
 
 `npm pack` 和 `npm publish` 都会通过 `prepack` 自动构建。包内只分发启动器、前端构建产物及 npm 自动包含的元数据和 README，使用者安装时无需构建。
 
-先在仓库外的空目录测试生成的 `xiefangqing-json-format-0.1.0.tgz`，将下方路径替换为本机压缩包的实际绝对路径：
+先在仓库外的空目录测试生成的 `xiefangqing-json-format-0.2.0.tgz`，将下方路径替换为本机压缩包的实际绝对路径：
 
 ```bash
-npx --yes --package /absolute/path/xiefangqing-json-format-0.1.0.tgz json-format
+npx --yes --package /absolute/path/xiefangqing-json-format-0.2.0.tgz json-format
 ```
 
 Windows 路径带空格时，用双引号包住完整路径。
@@ -83,7 +83,7 @@ npm publish --access public
 
 ```bash
 npm view @xiefangqing/json-format version --registry=https://registry.npmjs.org/
-npx --yes @xiefangqing/json-format@0.1.0
+npx --yes @xiefangqing/json-format@0.2.0
 ```
 
 发布前可以直接恢复代码改动，打包不会修改公共 registry。发布后不能覆盖同一版本；有问题时修复、递增版本并重新发布，再验证最新版本。不以删除公共包作为常规回滚方式。

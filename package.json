@@ -1,6 +1,6 @@
 {
   "name": "@xiefangqing/json-format",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Browser-only JSON formatter and tree viewer",
   "type": "module",
   "bin": {
