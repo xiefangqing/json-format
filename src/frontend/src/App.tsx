@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
+import { JsonHistoryBar } from "./components/JsonHistoryBar";
 import { JsonInputPane } from "./components/JsonInputPane";
 import { JsonOutputPane } from "./components/JsonOutputPane";
 import { JsonSplit } from "./components/JsonSplit";
 import { JsonToolbar } from "./components/JsonToolbar";
-import type { JsonEditKind, JsonViewMode } from "./types";
+import type { JsonEditKind, JsonHistoryEntry, JsonViewMode } from "./types";
 import { buildKey, buildValueNode } from "./utils/jsonEdit";
+import { appendHistoryEntry, createHistoryEntry, writeHistoryText } from "./utils/jsonHistory";
 import { parseJson } from "./utils/jsonParser";
 import { minifyJson, serializeJson } from "./utils/jsonSerializer";
 import { collectContainerPaths, renameKey, replaceNode } from "./utils/jsonTree";
 import { renderJsonTree } from "./utils/jsonTreeRender";
-import { clearInputHash, readInitialInput } from "./utils/urlParams";
 import { jsonToXml } from "./utils/xmlConvert";
 
 const DEFAULT_LEFT_WIDTH = 41.5;
@@ -34,8 +35,7 @@ const EXAMPLE_JSON = `{
 }`;
 
 export function App() {
-  const [initialInput] = useState(readInitialInput);
-  const [source, setSource] = useState(initialInput.text);
+  const [source, setSource] = useState("");
   const [view, setView] = useState<JsonViewMode>("tree");
   const [preserveEscapes, setPreserveEscapes] = useState(true);
   const [showLineNumbers, setShowLineNumbers] = useState(false);
@@ -45,8 +45,11 @@ export function App() {
   const [copied, setCopied] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [treeVersion, setTreeVersion] = useState(0);
+  const [history, setHistory] = useState<JsonHistoryEntry[]>([]);
+  const [activeHistoryId, setActiveHistoryId] = useState<number | null>(null);
 
   const appRef = useRef<HTMLDivElement>(null);
+  const historySeqRef = useRef(0);
 
   const parsed = useMemo(() => {
     if (source.trim() === "") {
@@ -65,45 +68,6 @@ export function App() {
     setCollapsedPaths(new Set());
     setMessage(undefined);
   }, [source, preserveEscapes]);
-
-  useEffect(() => {
-    clearInputHash();
-  }, []);
-
-  useEffect(() => {
-    if (!initialInput.fetchUrl) {
-      return;
-    }
-
-    const remoteUrl = initialInput.fetchUrl;
-    let cancelled = false;
-
-    async function loadRemoteJson() {
-      try {
-        const response = await fetch(remoteUrl);
-
-        if (!response.ok) {
-          throw new Error(`请求 JSON 失败，状态码 ${response.status}`);
-        }
-
-        const text = await response.text();
-
-        if (!cancelled) {
-          setSource(text);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setMessage(error instanceof Error ? error.message : "请求 JSON 失败");
-        }
-      }
-    }
-
-    void loadRemoteJson();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [initialInput.fetchUrl]);
 
   useEffect(() => {
     function handleFullscreenChange() {
@@ -179,7 +143,7 @@ export function App() {
         return;
       }
 
-      setSource(serializeJson(renameKey(parsed.node, path, builtKey.keyRaw, builtKey.key)));
+      commitSource(serializeJson(renameKey(parsed.node, path, builtKey.keyRaw, builtKey.key)));
       return;
     }
 
@@ -191,7 +155,7 @@ export function App() {
       return;
     }
 
-    setSource(serializeJson(replaceNode(parsed.node, path, builtValue.node)));
+    commitSource(serializeJson(replaceNode(parsed.node, path, builtValue.node)));
   }
 
   function handleToggleCompress() {
@@ -214,11 +178,63 @@ export function App() {
     setCollapsedPaths(allCollapsed ? new Set() : new Set(collectContainerPaths(parsed.node)));
   }
 
+  /** 取下一个历史序号，自增不复用 */
+  function nextHistoryId() {
+    historySeqRef.current += 1;
+    return historySeqRef.current;
+  }
+
+  /** 新建一条历史并切到它 */
+  function createHistory(text: string) {
+    const entry = createHistoryEntry(text, nextHistoryId());
+
+    setHistory((list) => appendHistoryEntry(list, entry));
+    setActiveHistoryId(entry.id);
+  }
+
+  /** 编辑区内容同步到历史：空则解绑，没有当前条目则新建，否则写回 */
+  function syncHistory(text: string) {
+    if (text === "") {
+      setActiveHistoryId(null);
+      return;
+    }
+
+    if (activeHistoryId === null) {
+      createHistory(text);
+      return;
+    }
+
+    const id = activeHistoryId;
+
+    setHistory((list) => writeHistoryText(list, id, text));
+  }
+
+  /** 写进编辑区，同时同步到历史 */
+  function commitSource(next: string) {
+    syncHistory(next);
+    setSource(next);
+  }
+
+  /** 粘贴覆盖全文时先解绑，等 change 到达后另起一条 */
+  function handlePaste(replacesAll: boolean) {
+    if (replacesAll) {
+      setActiveHistoryId(null);
+    }
+  }
+
+  /** 点历史条目：只切换，列表不动 */
+  function handleSwitchHistory(entry: JsonHistoryEntry) {
+    setActiveHistoryId(entry.id);
+    setSource(entry.text);
+  }
+
   function handleClear() {
+    setActiveHistoryId(null);
     setSource("");
   }
 
   function handleLoadExample() {
+    createHistory(EXAMPLE_JSON);
     setSource(EXAMPLE_JSON);
   }
 
@@ -277,7 +293,13 @@ export function App() {
   return (
     <main className="json-app" ref={appRef}>
       <section className="json-app__panel json-app__panel--input" style={{ width: `${leftWidth}%` }}>
-        <JsonInputPane value={source} showLineNumbers={showLineNumbers} onChange={setSource} />
+        <JsonHistoryBar activeId={activeHistoryId} entries={history} onSwitch={handleSwitchHistory} />
+        <JsonInputPane
+          value={source}
+          showLineNumbers={showLineNumbers}
+          onChange={commitSource}
+          onPaste={handlePaste}
+        />
       </section>
 
       <JsonSplit containerRef={appRef} onResize={setLeftWidth} />

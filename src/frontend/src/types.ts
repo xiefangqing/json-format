@@ -63,3 +63,12 @@ export type ParseResult = ParseSuccess | ParseFailure;
 export type JsonViewMode = "tree" | "minified" | "xml";
 
 export type JsonEditKind = "key" | "string" | "number" | "boolean" | "null";
+
+/** 一条历史：编号加正文，编辑区同一时刻对应其中一条 */
+export interface JsonHistoryEntry {
+  /** 自增序号，删掉后不复用，编号会断号 */
+  id: number;
+  text: string;
+  /** 悬停提示用的单行摘要，正文变化时同步更新 */
+  summary: string;
+}

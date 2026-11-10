@@ -17,6 +17,12 @@ function renderApp() {
   return screen.getByPlaceholderText("请输入json数据...") as HTMLTextAreaElement;
 }
 
+/** 模拟全选后粘贴覆盖全文 */
+function pasteAll(textarea: HTMLTextAreaElement) {
+  textarea.setSelectionRange(0, textarea.value.length);
+  fireEvent.paste(textarea);
+}
+
 describe("App", () => {
   it("输入 JSON 后右侧渲染成彩色树", () => {
     const textarea = renderApp();
@@ -100,5 +106,65 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "示例" }));
 
     expect(textarea.value).toContain('"title": "JSON 在线解析"');
+  });
+
+  it("粘贴覆盖全文各自成条，点序号切回", () => {
+    const textarea = renderApp();
+
+    fireEvent.change(textarea, { target: { value: '{"a":1}' } });
+    pasteAll(textarea);
+    fireEvent.change(textarea, { target: { value: '{"b":2}' } });
+
+    expect(document.querySelectorAll(".json-history__button")).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole("button", { name: "1" }));
+
+    expect(textarea).toHaveValue('{"a":1}');
+    expect(screen.getByText('"a"')).toBeInTheDocument();
+    expect(document.querySelectorAll(".json-history__button")).toHaveLength(2);
+  });
+
+  it("改字写回当前条，切走再切回能看到改动", () => {
+    const textarea = renderApp();
+
+    fireEvent.change(textarea, { target: { value: '{"a":1}' } });
+    pasteAll(textarea);
+    fireEvent.change(textarea, { target: { value: '{"b":2}' } });
+
+    fireEvent.click(screen.getByRole("button", { name: "1" }));
+    fireEvent.change(textarea, { target: { value: '{"a":9}' } });
+    fireEvent.click(screen.getByRole("button", { name: "2" }));
+    fireEvent.click(screen.getByRole("button", { name: "1" }));
+
+    expect(textarea).toHaveValue('{"a":9}');
+  });
+
+  it("清空不新增条目，点序号还能取回", () => {
+    const textarea = renderApp();
+
+    fireEvent.change(textarea, { target: { value: '{"a":1}' } });
+    fireEvent.click(screen.getByRole("button", { name: "清空" }));
+
+    expect(textarea).toHaveValue("");
+    expect(document.querySelectorAll(".json-history__button")).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "1" }));
+
+    expect(textarea).toHaveValue('{"a":1}');
+  });
+
+  it("当前条带激活标记", () => {
+    const textarea = renderApp();
+
+    fireEvent.change(textarea, { target: { value: '{"a":1}' } });
+    pasteAll(textarea);
+    fireEvent.change(textarea, { target: { value: '{"b":2}' } });
+
+    expect(screen.getByRole("button", { name: "2" })).toHaveClass("json-history__button--active");
+
+    fireEvent.click(screen.getByRole("button", { name: "1" }));
+
+    expect(screen.getByRole("button", { name: "1" })).toHaveClass("json-history__button--active");
+    expect(screen.getByRole("button", { name: "2" })).not.toHaveClass("json-history__button--active");
   });
 });
